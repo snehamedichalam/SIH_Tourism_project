@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourist Safety System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcome" class="screen active">
+            <div class="header">
+                <h1>🛡️ SafeTrek</h1>
+                <p>Your Digital Travel Guardian</p>
+            </div>
+            <div class="welcome-content">
+                <div class="feature-card">
+                    <div class="feature-icon">🧳</div>
+                    <h3>Smart Registration</h3>
+                    <p>AI-powered document scanning and blockchain identity creation</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📍</div>
+                    <h3>Real-time Tracking</h3>
+                    <p>GPS monitoring with IoT integration for your safety</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚨</div>
+                    <h3>Emergency Response</h3>
+                    <p>Instant SOS with automated rescue coordination</p>
+                </div>
+            </div>
+            <button class="btn" onclick="showScreen('registration')">Get Started</button>
+        </div>
+
+        <!-- Registration Screen -->
+        <div id="registration" class="screen">
+            <div class="header">
+                <h1>📝 Register</h1>
+                <p>Complete your tourist profile</p>
+            </div>
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="nationality">Nationality</label>
+                    <select id="nationality" name="nationality" required>
+                        <option value="">Select Country</option>
+                        <option value="US">United States</option>
+                        <option value="UK">United Kingdom</option>
+                        <option value="IN">India</option>
+                        <option value="CA">Canada</option>
+                        <option value="AU">Australia</option>
+                        <option value="DE">Germany</option>
+                        <option value="FR">France</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="emergencyContact">Emergency Contact</label>
+                    <input type="tel" id="emergencyContact" name="emergencyContact" required>
+                </div>
+            </form>
+            <button class="btn" onclick="processRegistration()">Continue to Document Scan</button>
+            <button class="btn secondary" onclick="showScreen('welcome')">Back</button>
+        </div>
+
+        <!-- Document Scan Screen -->
+        <div id="documentScan" class="screen">
+            <div class="header">
+                <h1>📷 Scan Document</h1>
+                <p>AI-powered OCR processing</p>
+            </div>
+            <div class="scan-area">
+                <div class="camera-placeholder">
+                    <div class="camera-icon">📸</div>
+                    <p>Position your passport or Aadhaar card within the frame</p>
+                    <div class="scan-frame"></div>
+                </div>
+                <div class="scan-progress" id="scanProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p id="scanStatus">Ready to scan...</p>
+                </div>
+            </div>
+            <button class="btn" onclick="startDocumentScan()" id="scanBtn">Start Scanning</button>
+            <button class="btn secondary" onclick="showScreen('registration')">Back</button>
+        </div>
+
+        <!-- QR Code Screen -->
+        <div id="qrCode" class="screen">
+            <div class="header">
+                <h1>✅ Registration Complete</h1>
+                <p>Your digital identity is ready</p>
+            </div>
+            <div class="qr-section">
+                <div class="qr-placeholder" id="qrPlaceholder">
+                    <div class="qr-grid"></div>
+                </div>
+                <p class="qr-info">Your unique QR code for quick identification</p>
+                <div class="did-info">
+                    <p><strong>Blockchain DID:</strong></p>
+                    <p class="did-code" id="didCode">did:ethr:0x...</p>
+                </div>
+            </div>
+            <div class="tracker-option">
+                <h3>📍 IoT Tracker Available</h3>
+                <p>Optional LoRa/Bluetooth device for enhanced safety</p>
+                <div class="tracker-toggle">
+                    <input type="checkbox" id="trackerEnabled" onchange="toggleTracker()">
+                    <label for="trackerEnabled">Enable IoT Tracking</label>
+                </div>
+            </div>
+            <button class="btn" onclick="showScreen('dashboard')">Enter SafeTrek</button>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="dashboard" class="screen">
+            <div class="header">
+                <h1>🌍 SafeTrek Dashboard</h1>
+                <p id="welcomeUser">Welcome, Traveler!</p>
+            </div>
+            <div class="status-panel">
+                <div class="status-item">
+                    <span class="status-label">Location:</span>
+                    <span class="status-value" id="currentLocation">Detecting...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Safety Level:</span>
+                    <span class="status-value safe" id="safetyLevel">Safe</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Heart Rate:</span>
+                    <span class="status-value" id="heartRate">-- bpm</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Battery:</span>
+                    <span class="status-value" id="batteryLevel">95%</span>
+                </div>
+            </div>
+            <div class="map-placeholder">
+                <div class="map-content">
+                    <div class="user-marker" id="userMarker">📍</div>
+                    <div class="safe-zone"></div>
+                    <div class="warning-zone"></div>
+                    <div class="danger-zone"></div>
+                </div>
+                <p>Live GPS Tracking Active</p>
+            </div>
+            <button class="btn danger" onclick="triggerEmergency()">🚨 EMERGENCY SOS</button>
+            <div class="quick-actions">
+                <button class="btn secondary" onclick="showScreen('tracking')">View Tracking</button>
+                <button class="btn secondary" onclick="showScreen('profile')">Profile</button>
+            </div>
+        </div>
+
+        <!-- Tracking Screen -->
+        <div id="tracking" class="screen">
+            <div class="header">
+                <h1>📡 Live Tracking</h1>
+                <p>Real-time location monitoring</p>
+            </div>
+            <div class="tracking-data">
+                <div class="data-stream">
+                    <h3>📊 Data Stream</h3>
+                    <div class="stream-item">
+                        <span>GPS:</span> <span id="gpsCoords">Loading...</span>
+                    </div>
+                    <div class="stream-item">
+                        <span>Altitude:</span> <span id="altitude">-- m</span>
+                    </div>
+                    <div class="stream-item">
+                        <span>Speed:</span> <span id="speed">-- km/h</span>
+                    </div>
+                    <div class="stream-item">
+                        <span>Direction:</span> <span id="direction">--°</span>
+                    </div>
+                </div>
+                <div class="vitals-stream">
+                    <h3>💗 Vital Signs</h3>
+                    <div class="vital-chart" id="heartRateChart">
+                        <div class="chart-line"></div>
+                    </div>
+                    <div class="stream-item">
+                        <span>Heart Rate:</span> <span id="currentHR">-- bpm</span>
+                    </div>
+                    <div class="stream-item">
+                        <span>Activity:</span> <span id="activityType">Walking</span>
+                    </div>
+                </div>
+                <div class="connection-status">
+                    <div class="connection-indicator mqtt" id="mqttStatus">
+                        <span class="indicator-dot"></span>
+                        MQTT: Connected
+                    </div>
+                    <div class="connection-indicator kafka" id="kafkaStatus">
+                        <span class="indicator-dot"></span>
+                        Kafka: Streaming
+                    </div>
+                </div>
+            </div>
+            <button class="btn secondary" onclick="showScreen('dashboard')">Back to Dashboard</button>
+        </div>
+
+        <!-- Emergency Screen -->
+        <div id="emergency" class="screen">
+            <div class="header emergency-header">
+                <h1>🚨 EMERGENCY ACTIVE</h1>
+                <p>Help is on the way</p>
+            </div>
+            <div class="emergency-content">
+                <div class="emergency-status">
+                    <div class="status-indicator pulsing"></div>
+                    <h2>SOS Triggered</h2>
+                    <p id="emergencyTime">Emergency activated at: --:--</p>
+                </div>
+                <div class="emergency-details">
+                    <div class="detail-item">
+                        <span>📍 Location:</span>
+                        <span id="emergencyLocation">Coordinates sent</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>🚑 Response Team:</span>
+                        <span id="responseTeam">Dispatch in progress</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>⏱️ ETA:</span>
+                        <span id="rescueETA">Calculating...</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>💰 Emergency Funds:</span>
+                        <span id="emergencyFunds">Reserved via smart contract</span>
+                    </div>
+                </div>
+                <div class="emergency-evidence">
+                    <h3>📸 Evidence Capture</h3>
+                    <p>Nearby cameras activated, data secured on blockchain</p>
+                    <div class="blockchain-hash">
+                        <small>IPFS Hash: Qm...</small>
+                    </div>
+                </div>
+                <div class="emergency-actions">
+                    <button class="btn" onclick="contactEmergencyServices()">📞 Call Emergency Services</button>
+                    <button class="btn secondary" onclick="cancelEmergency()">Cancel SOS</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Screen -->
+        <div id="profile" class="screen">
+            <div class="header">
+                <h1>👤 Profile</h1>
+                <p>Your travel information</p>
+            </div>
+            <div class="profile-info">
+                <div class="profile-section">
+                    <h3>Personal Information</h3>
+                    <div class="info-item">
+                        <span>Name:</span> <span id="profileName">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span>Email:</span> <span id="profileEmail">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span>Phone:</span> <span id="profilePhone">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span>Nationality:</span> <span id="profileNationality">--</span>
+                    </div>
+                </div>
+                <div class="profile-section">
+                    <h3>Security</h3>
+                    <div class="info-item">
+                        <span>DID:</span> <span id="profileDID" class="did-code">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span>Registration:</span> <span id="registrationDate">--</span>
+                    </div>
+                </div>
+                <div class="profile-section">
+                    <h3>Settings</h3>
+                    <div class="setting-toggle">
+                        <input type="checkbox" id="locationSharing" checked>
+                        <label for="locationSharing">Location Sharing</label>
+                    </div>
+                    <div class="setting-toggle">
+                        <input type="checkbox" id="vitalMonitoring" checked>
+                        <label for="vitalMonitoring">Vital Sign Monitoring</label>
+                    </div>
+                    <div class="setting-toggle">
+                        <input type="checkbox" id="autoSOS">
+                        <label for="autoSOS">Automatic SOS Detection</label>
+                    </div>
+                </div>
+            </div>
+            <button class="btn secondary" onclick="showScreen('dashboard')">Back to Dashboard</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

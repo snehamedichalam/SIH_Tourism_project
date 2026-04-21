@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeTrek Command Center</title>
+    <link rel="stylesheet" href="sty.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>🚁 SafeTrek Command Center</h1>
+                <div class="status-indicator">
+                    <span class="status-dot online"></span>
+                    <span>System Online</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="time-display" id="currentTime">--:--:--</div>
+                <div class="operator-info">
+                    <span>Operator: Rescue Team Alpha</span>
+                    <div class="operator-avatar">👨‍🚒</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="dashboard-content">
+            <!-- Left Sidebar - Tourist List & Alerts -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3>🚨 Active Alerts</h3>
+                    <div class="alert-list" id="alertList">
+                        <!-- Alerts will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>👥 Active Tourists</h3>
+                    <div class="filter-controls">
+                        <select id="statusFilter">
+                            <option value="all">All Status</option>
+                            <option value="safe">Safe</option>
+                            <option value="warning">Warning</option>
+                            <option value="danger">Emergency</option>
+                        </select>
+                        <input type="text" id="searchTourists" placeholder="Search tourists...">
+                    </div>
+                    <div class="tourist-list" id="touristList">
+                        <!-- Tourist list will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>🚑 Response Teams</h3>
+                    <div class="team-list" id="teamList">
+                        <!-- Teams will be populated by JavaScript -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Map Area -->
+            <main class="map-container">
+                <div class="map-controls">
+                    <div class="control-group">
+                        <button class="control-btn" onclick="toggleLayer('tourists')">
+                            <span class="btn-icon">👥</span>
+                            Tourists
+                        </button>
+                        <button class="control-btn" onclick="toggleLayer('teams')">
+                            <span class="btn-icon">🚑</span>
+                            Teams
+                        </button>
+                        <button class="control-btn" onclick="toggleLayer('zones')">
+                            <span class="btn-icon">⚠️</span>
+                            Risk Zones
+                        </button>
+                        <button class="control-btn" onclick="toggleLayer('cameras')">
+                            <span class="btn-icon">📹</span>
+                            Cameras
+                        </button>
+                    </div>
+                    <div class="map-info">
+                        <span>Scale: 1:10,000 | Last Update: <span id="lastUpdate">--:--</span></span>
+                    </div>
+                </div>
+
+                <div class="map-display" id="mapDisplay">
+                    <div class="map-grid">
+                        <!-- Map markers will be populated by JavaScript -->
+                    </div>
+                    <div class="map-legend">
+                        <div class="legend-item">
+                            <span class="legend-color tourist-safe"></span>
+                            <span>Safe Tourist</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color tourist-warning"></span>
+                            <span>Warning</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color tourist-danger"></span>
+                            <span>Emergency</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color team-available"></span>
+                            <span>Team Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color team-deployed"></span>
+                            <span>Team Deployed</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Panel - Details & Actions -->
+            <aside class="details-panel" id="detailsPanel">
+                <div class="panel-header">
+                    <h3 id="panelTitle">Select a Tourist or Alert</h3>
+                    <button class="close-btn" onclick="closeDetailsPanel()">×</button>
+                </div>
+
+                <div class="panel-content" id="panelContent">
+                    <div class="welcome-message">
+                        <div class="welcome-icon">🗺️</div>
+                        <p>Click on any tourist marker or alert to view detailed information and response options.</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Emergency Modal -->
+        <div class="modal" id="emergencyModal">
+            <div class="modal-content emergency-modal">
+                <div class="modal-header emergency-header">
+                    <h2>🚨 EMERGENCY RESPONSE</h2>
+                    <div class="emergency-timer" id="emergencyTimer">00:00</div>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="emergency-details" id="emergencyDetails">
+                        <!-- Emergency details will be populated -->
+                    </div>
+                    
+                    <div class="response-actions">
+                        <div class="action-section">
+                            <h4>📍 Location & Evidence</h4>
+                            <div class="evidence-capture" id="evidenceCapture">
+                                <div class="camera-feed">
+                                    <div class="feed-placeholder">📹 Camera Feed Active</div>
+                                    <div class="feed-controls">
+                                        <button class="feed-btn">📸 Capture</button>
+                                        <button class="feed-btn">🎥 Record</button>
+                                    </div>
+                                </div>
+                                <div class="blockchain-status">
+                                    <span class="blockchain-indicator">🔗</span>
+                                    <span>Evidence secured on blockchain</span>
+                                    <div class="hash-display">IPFS: Qm...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="action-section">
+                            <h4>🚑 Dispatch Response Team</h4>
+                            <div class="team-selection" id="teamSelection">
+                                <!-- Team options will be populated -->
+                            </div>
+                        </div>
+
+                        <div class="action-section">
+                            <h4>💰 Smart Contract Actions</h4>
+                            <div class="contract-status">
+                                <div class="contract-item">
+                                    <span>Emergency Funds:</span>
+                                    <span class="amount">$500 Reserved</span>
+                                </div>
+                                <div class="contract-item">
+                                    <span>Insurance Claim:</span>
+                                    <span class="status">Auto-triggered</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-danger" onclick="dispatchTeam()">🚑 DISPATCH TEAM</button>
+                    <button class="btn btn-secondary" onclick="escalateEmergency()">⬆️ ESCALATE</button>
+                    <button class="btn btn-secondary" onclick="closeEmergencyModal()">❌ CLOSE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Modal -->
+        <div class="modal" id="analyticsModal">
+            <div class="modal-content analytics-modal">
+                <div class="modal-header">
+                    <h2>📊 Analytics Dashboard</h2>
+                    <button class="close-btn" onclick="closeAnalyticsModal()">×</button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>📈 Response Metrics</h4>
+                            <div class="metric-display">
+                                <div class="metric">
+                                    <span class="metric-value" id="avgResponseTime">4.2</span>
+                                    <span class="metric-label">Avg Response (min)</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value" id="totalEmergencies">127</span>
+                                    <span class="metric-label">Total Emergencies</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card">
+                            <h4>🗺️ Risk Heatmap</h4>
+                            <div class="heatmap-display">
+                                <div class="heatmap-grid">
+                                    <!-- Heatmap visualization -->
+                                    <div class="heatmap-zone high"></div>
+                                    <div class="heatmap-zone medium"></div>
+                                    <div class="heatmap-zone low"></div>
+                                </div>
+                                <div class="heatmap-legend">
+                                    <span class="legend-high">High Risk</span>
+                                    <span class="legend-medium">Medium Risk</span>
+                                    <span class="legend-low">Low Risk</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card">
+                            <h4>⏱️ Timeline Analysis</h4>
+                            <div class="timeline-chart" id="timelineChart">
+                                <!-- Timeline visualization -->
+                                <div class="timeline-bar"></div>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card">
+                            <h4>🏥 Resource Utilization</h4>
+                            <div class="resource-display">
+                                <div class="resource-item">
+                                    <span>Teams Available:</span>
+                                    <span class="resource-value">6/8</span>
+                                </div>
+                                <div class="resource-item">
+                                    <span>Equipment Ready:</span>
+                                    <span class="resource-value">94%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="floating-actions">
+            <button class="fab primary" onclick="openAnalytics()" title="Analytics Dashboard">
+                📊
+            </button>
+            <button class="fab secondary" onclick="refreshData()" title="Refresh Data">
+                🔄
+            </button>
+            <button class="fab secondary" onclick="toggleNotifications()" title="Toggle Notifications">
+                🔔
+            </button>
+        </div>
+
+        <!-- Notifications -->
+        <div class="notifications" id="notifications">
+            <!-- Notifications will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
